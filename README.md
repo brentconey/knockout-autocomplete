@@ -6,8 +6,9 @@ Dependencies: jQuery, Knockoutjs
 Please refer to the index.html to see the simple use case.
 
 Below is using the auto complete component:
+```html
  <ko-autocomplete params="dataSource: data, onResultSelected: resultSelected, displayKey: 'name', searchKey: 'name', searchText: searchText, textBoxCssClass: 'form-control'"></ko-autocomplete>
- 
+ ```html
  **Parameters:**
  
  **dataSource** - This represents a javascript array of the data you want the auto complete to search.
