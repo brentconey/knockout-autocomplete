@@ -9,6 +9,7 @@ Below is using the auto complete component:
  <ko-autocomplete params="dataSource: data, onResultSelected: resultSelected, displayKey: 'name', searchKey: 'name', searchText: searchText, textBoxCssClass: 'form-control'"></ko-autocomplete>
  
  Parameters:
+ 
  dataSource - This represents a javascript array of the data you want the auto complete to search.
  
  dataSourceUrl - This represents a GET endpoint to send the search string to that returns search matches. Ex. dataSourceUrl: '/states?q=' The search string will be appended to this url and sent to the server via an ajax GET call.
