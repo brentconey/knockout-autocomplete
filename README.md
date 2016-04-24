@@ -9,6 +9,24 @@ Below is using the auto complete component:
 ```html
  <ko-autocomplete params="dataSource: data, onResultSelected: resultSelected, displayKey: 'name', searchKey: 'name', searchText: searchText, textBoxCssClass: 'form-control'"></ko-autocomplete>
 ```
+ViewModel:
+```js
+     var viewModel = (function(){
+            var data = [{ id: 1, name: 'Lewis Hamilton' }, { id: 2, name: 'Nico Rosberg' }, { id: 3, name: 'Sebastian Vettel' }];
+            var searchText = ko.observable('');
+            var resultText = ko.observable('');
+            var resultSelected = function(selection){
+                resultText("You have selected: " + JSON.stringify(selection));
+            };
+         return{
+           data: data,
+           searchText: searchText,
+           resultSelected: resultSelected,
+           resultText: resultText
+         }
+        })();
+ ```
+
  **Parameters:**
  
  **dataSource** - This represents a javascript array of the data you want the auto complete to search.
