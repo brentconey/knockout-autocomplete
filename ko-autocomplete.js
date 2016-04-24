@@ -1,6 +1,8 @@
 ko.components.register('ko-autocomplete', {
     viewModel: function (params) {
         var self = this;
+        self.textBoxCssClass = ko.observable(params.textBoxCssClass || '');
+        self.required = ko.observable(params.required || false);
         self.placeHolder = ko.observable(params.placeholder || '');
         if (typeof params.onResultSelected !== "function") {
             throw new Error("onResultSelected must be a function.");
@@ -13,7 +15,8 @@ ko.components.register('ko-autocomplete', {
                 self.searchResults.removeAll();
             });
         };
-
+        var timer;
+        var searchAjaxRequest;
         self.search = function (data, event) {
             var newValue = self.searchText();
             var keyPressed = event.keyCode;
@@ -65,38 +68,47 @@ ko.components.register('ko-autocomplete', {
                     $.when(params.onResultSelected(selectedResult, params.resultsSelectedParamsObj)).done(function () {
                         self.searchResults.removeAll();
                     });
-
                 }
             } else {
                 //other keys
                 if (newValue.length >= 2) {
-                    $(event.currentTarget).addClass("tt-spinner");
-                    $.ajax({
-                        type: "GET",
-                        url: params.dataSourceUrl + newValue,
-                        global: false
-                    }).done(function (data) {
-                        $(event.currentTarget).removeClass("tt-spinner");
+                    if (params.dataSource) {
                         self.searchResults.removeAll();
-                        $.each(data, function (index, searchResult) {
-                            searchResult.selected = ko.observable(false);
-                            var displayResult = searchResult[params.displayKey];
-                            var displayKeyHtml = '';
-                            var indexOfSearch = displayResult.indexOf(newValue);
-                            if (indexOfSearch > -1) {
-                                displayKeyHtml = displayResult.replace(newValue, "<strong>" + newValue + "</strong>");
-                            } else {
-                                displayKeyHtml = displayResult;
+                        $.each(params.dataSource, function (index, record) {
+                            if (record[params.searchKey].toLowerCase().indexOf(newValue.toLowerCase()) > -1) {
+                                self.handleSearchMatch(record, newValue);
                             }
-                            searchResult.displayKey = ko.observable(displayKeyHtml);
-                            self.searchResults.push(searchResult);
                         });
-                        $(event.currentTarget).removeClass("tt-spinner");
-                    }).fail(function (failObject, textStatus, errorThrown) {
-                        self.searchResults.removeAll();
-                        toastr.error(failObject.responseJSON);
-                        $(event.currentTarget).removeClass("tt-spinner");
-                    });
+
+                    } else {
+                        var waitTime = 350;
+                        clearTimeout(timer);
+                        timer = setTimeout(function () {
+                            if (searchAjaxRequest) {
+                                searchAjaxRequest.abort();
+                            }
+                            searchAjaxRequest = $.ajax({
+                                type: "GET",
+                                url: params.dataSourceUrl + newValue,
+                                global: false
+                            });
+                            $(event.currentTarget).addClass("tt-spinner");
+                            searchAjaxRequest.done(function (data) {
+                                $(event.currentTarget).removeClass("tt-spinner");
+                                self.searchResults.removeAll();
+                                $.each(data, function (index, searchResult) {
+                                    self.handleSearchMatch(searchResult, newValue);
+                                });
+                                $(event.currentTarget).removeClass("tt-spinner");
+                            }).fail(function (failObject, textStatus, errorThrown) {
+                                if (textStatus != "abort") {
+                                    self.searchResults.removeAll();
+                                    toastr.error(failObject.responseJSON);
+                                }
+                                $(event.currentTarget).removeClass("tt-spinner");
+                            });
+                        });
+                    }
                 }
             }
             if (newValue === "") {
@@ -111,6 +123,19 @@ ko.components.register('ko-autocomplete', {
                 }
             });
         };
+        self.handleSearchMatch = function (searchResult, searchString) {
+            searchResult.selected = ko.observable(false);
+            var displayResult = searchResult[params.displayKey];
+            var displayKeyHtml = '';
+            var indexOfSearch = displayResult.indexOf(searchString);
+            if (indexOfSearch > -1) {
+                displayKeyHtml = displayResult.replace(searchString, "<strong>" + searchString + "</strong>");
+            } else {
+                displayKeyHtml = displayResult;
+            }
+            searchResult.displayKey = ko.observable(displayKeyHtml);
+            self.searchResults.push(searchResult);
+        };
     },
-    template: '<div class="sl-autocomplete"><input type="text" value="" class="sl-autocomplete-input" data-bind="textinput: searchText, hasFocus: true, event: { \'keyup\' : search }, attr: { placeholder: placeHolder }" autocomplete="off" /><div class="sl-autocomplete-results-panel" data-bind="visible: searchResults().length > 0"><ul class="sl-autocomplete-results" data-bind="foreach: searchResults"><li class="sl-autocomplete-result" data-bind="click: $parent.resultClick, css: { selected: selected }"><span class="sl-autocomplete-result-text" data-bind="html: displayKey"></span></li></ul></div></div>'
+    template: '<div class="ko-autocomplete"><input type="text" value="" class="ko-autocomplete-input" data-bind="textinput: searchText, hasFocus: true, event: { \'keyup\' : search }, attr: { placeholder: placeHolder }, css: textBoxCssClass" autocomplete="off" /><div class="ko-autocomplete-results-panel" data-bind="visible: searchResults().length > 0"><ul class="ko-autocomplete-results" data-bind="foreach: searchResults"><li class="ko-autocomplete-result" data-bind="click: $parent.resultClick, css: { selected: selected }"><span class="ko-autocomplete-result-text" data-bind="html: displayKey"></span></li></ul></div></div>'
 });

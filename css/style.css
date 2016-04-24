@@ -1,13 +1,13 @@
-.sl-autocomplete {
+.ko-autocomplete {
     position: relative
 }
 
-.sl-autocomplete-input {
+.ok-autocomplete-input {
     display: inline-block;
     width: 100%
 }
 
-.sl-autocomplete-results-panel {
+.ko-autocomplete-results-panel {
     position: absolute;
     top: calc(100% - 2px);
     left: 0;
@@ -18,22 +18,26 @@
     border-radius: 0 0 3px 3px
 }
 
-.sl-autocomplete-result {
+.ko-autocomplete-results-panel ul{
+    list-style: none;
+}
+
+.ko-autocomplete-result {
     cursor: pointer;
     color: #555
 }
 
-.sl-autocomplete-result:hover,.sl-autocomplete-result:focus,.sl-autocomplete-result.selected {
-    outline: 2px solid #2aabb2;
+.ko-autocomplete-result:hover,.ko-autocomplete-result:focus,.ko-autocomplete-result.selected {
+    outline: 1px solid #66afe9;
     outline-offset: -1px;
     color: #111
 }
 
-.sl-autocomplete-result:not(:last-child) {
+.ko-autocomplete-result:not(:last-child) {
     border-bottom: 1px solid #eee
 }
 
-.sl-autocomplete-result-text {
+.ko-autocomplete-result-text {
     display: block;
     line-height: 1.25;
     font-size: 13px;
