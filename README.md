@@ -22,6 +22,6 @@ Below is using the auto complete component:
  
  **searchKey** (Only used with a dataSource, not a dataSourceUrl) - This is the key from the dataSource array to use for searching.
  
- searchText - This represents the search text box observable from your viewModel.
+ **searchText** - This represents the search text box observable from your viewModel.
  
- textBoxCssClass - This is an optional parameter to add a class to the search text box from the component.
+ **textBoxCssClass** - This is an optional parameter to add a class to the search text box from the component.
