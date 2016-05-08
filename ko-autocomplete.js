@@ -107,7 +107,7 @@ ko.components.register('ko-autocomplete', {
                                 }
                                 $(event.currentTarget).removeClass("tt-spinner");
                             });
-                        });
+                        }, waitTime);
                     }
                 }
             }
