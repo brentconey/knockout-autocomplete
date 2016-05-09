@@ -127,11 +127,15 @@ ko.components.register('ko-autocomplete', {
             searchResult.selected = ko.observable(false);
             var displayResult = searchResult[params.displayKey];
             var displayKeyHtml = '';
-            var indexOfSearch = displayResult.indexOf(searchString);
-            if (indexOfSearch > -1) {
-                displayKeyHtml = displayResult.replace(searchString, "<strong>" + searchString + "</strong>");
-            } else {
-                displayKeyHtml = displayResult;
+            var indexOfSearch = displayResult.toLowerCase().indexOf(searchString.toLowerCase());
+            for (var i = 0; i <= displayResult.length - 1; i++) {
+                if (i === indexOfSearch) {
+                    displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
+                } else if (i >= indexOfSearch && i <= searchString.length) {
+                    displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
+                } else {
+                    displayKeyHtml += displayResult[i];
+                }
             }
             searchResult.displayKey = ko.observable(displayKeyHtml);
             self.searchResults.push(searchResult);
