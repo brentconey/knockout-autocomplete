@@ -128,17 +128,19 @@ ko.components.register('ko-autocomplete', {
             var displayResult = searchResult[params.displayKey];
             var displayKeyHtml = '';
             var indexOfSearch = displayResult.toLowerCase().indexOf(searchString.toLowerCase());
-            for (var i = 0; i <= displayResult.length - 1; i++) {
-                if (i === indexOfSearch) {
-                    displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
-                } else if (i >= indexOfSearch && i <= searchString.length) {
-                    displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
-                } else {
-                    displayKeyHtml += displayResult[i];
+            if (indexOfSearch > -1) {
+                for (var i = 0; i <= displayResult.length - 1; i++) {
+                    if (i === indexOfSearch) {
+                        displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
+                    } else if (i > indexOfSearch && ((i - indexOfSearch) <= searchString.length - 1)) {
+                        displayKeyHtml += "<strong>" + displayResult[i] + "</strong>";
+                    } else {
+                        displayKeyHtml += displayResult[i];
+                    }
                 }
+                searchResult.displayKey = ko.observable(displayKeyHtml);
+                self.searchResults.push(searchResult);
             }
-            searchResult.displayKey = ko.observable(displayKeyHtml);
-            self.searchResults.push(searchResult);
         };
     },
     template: '<div class="ko-autocomplete"><input type="text" value="" class="ko-autocomplete-input" data-bind="textinput: searchText, hasFocus: true, event: { \'keyup\' : search }, attr: { placeholder: placeHolder }, css: textBoxCssClass" autocomplete="off" /><div class="ko-autocomplete-results-panel" data-bind="visible: searchResults().length > 0"><ul class="ko-autocomplete-results" data-bind="foreach: searchResults"><li class="ko-autocomplete-result" data-bind="click: $parent.resultClick, css: { selected: selected }"><span class="ko-autocomplete-result-text" data-bind="html: displayKey"></span></li></ul></div></div>'
